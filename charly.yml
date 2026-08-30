@@ -71,6 +71,53 @@ charly-mcp:
               mkdir: /workspace
               mode: "0777"
               run_as: root
+            # Seed a PLACEHOLDER project into /workspace.
+            #
+            # Without one, `charly mcp serve` starts with no project, so the plugin's
+            # project prefix resolves to `--repo default` — and that prefix is computed
+            # ONCE at server startup and closed over by every tool handler. Every project
+            # tool then runs `git ls-remote https://github.com/opencharly/charly.git` from
+            # INSIDE the venue, for the process lifetime. In a pod without egress DNS that
+            # is a hard failure of `version`, `box.list.boxes` and `charly status --json`,
+            # and it does not recover when a project appears later.
+            #
+            # A bind-mount over /workspace shadows this file, so an operator mounting a real
+            # checkout is unaffected — this only decides what happens when nothing is mounted.
+            #
+            # The stamp is the MIGRATE FLOOR, not a current CalVer, because the correct stamp
+            # is a property of the charly baked into THIS image and cannot be known here: a
+            # stamp newer than the image's charly is rejected outright, and an older one fails
+            # `charly box validate`. The migrate step below restamps it to whatever this
+            # image's charly requires, which is the only image-independent way to get it right.
+            - run: seed a placeholder project so the MCP server resolves locally, not over the network
+              id: workspace-placeholder-project
+              write: /workspace/charly.yml
+              mode: "0666"
+              run_as: root
+              content: |
+                  version: 2026.174.1100
+                  workspace:
+                      candy:
+                          version: 2026.174.1100
+                          description: >-
+                              Placeholder project. charly resolves a project from /workspace;
+                              without one the MCP server falls back to fetching opencharly/charly
+                              over the network. Bind-mount your own checkout over /workspace to
+                              replace this.
+                          plan:
+                              - run: mark the placeholder workspace
+                                id: ws-marker
+                                mkdir: /workspace/.charly-placeholder
+                                run_as: root
+                              - check: the placeholder marker exists
+                                id: ws-probe
+                                file:
+                                    file: /workspace/.charly-placeholder
+                                    filetype: directory
+            - run: restamp the placeholder to this image's own schema version
+              id: workspace-placeholder-migrate
+              command: HOME=${HOME:-/root} charly migrate -C /workspace
+              run_as: root
             - check: the composed charly candy bakes the charly CLI binary at /usr/bin/charly
               file:
                 file: /usr/bin/charly
@@ -79,6 +126,11 @@ charly-mcp:
               file:
                 file: /workspace
                 filetype: directory
+            - check: the placeholder project is seeded, so the MCP server never reaches the network for one
+              id: workspace-project-seeded
+              file:
+                file: /workspace/charly.yml
+                exists: true
             - check: the supervised charly-mcp service is running
               context:
                 - runtime
