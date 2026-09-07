@@ -58,7 +58,10 @@ charly-mcp:
               path: /workspace
         service:
             - name: charly-mcp
-              exec: "/usr/bin/charly mcp serve --listen :18765"
+              # The MCP server defaults to 127.0.0.1 (loopback-only; P3). Inside the
+              # container, binding 0.0.0.0 is normal and fine — the host only reaches
+              # the server through the operator's explicit published port mapping.
+              exec: "/usr/bin/charly mcp serve --listen 0.0.0.0:18765"
               restart: always
               enable: true
               scope: system
