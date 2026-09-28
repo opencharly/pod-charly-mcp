@@ -1,7 +1,5 @@
-version: 2026.261.1747
 charly-mcp:
     candy:
-        version: 2026.243.0100
         description: |
             An MCP server exposing the full charly CLI as Streamable-HTTP tools on port 18765
             charly-mcp is a meta-composition (candy: [charly, supervisord]) with no
