@@ -31,7 +31,7 @@ charly-mcp:
             - '@github.com/opencharly/plugin-mcp/candy/plugin-mcp:v2026.272.0329'
         candy:
             # the charly meta-candy, now its own repo (candy de-submodule cutover).
-            # v2026.269.2324 is layer-charly#10 — the deterministic charly version pin.
+            # v2026.274.0345 is the current layer-charly release — the deterministic charly version pin.
             - '@github.com/opencharly/layer-charly:v2026.274.0345'
             - '@github.com/opencharly/layer-supervisord:v2026.271.1817'
         port:
