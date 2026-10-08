@@ -335,7 +335,7 @@ charly-mcp-skill:
             
             All `mcp:` checks pass `mcp_name: charly` so they stay unambiguous on
             boxes that also expose `jupyter` or `chrome-devtools` servers
-            (e.g. `/charly-openclaw:openclaw-desktop`).
+           .
             
             ## Host networking caveat
             
