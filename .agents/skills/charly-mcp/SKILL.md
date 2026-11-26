@@ -170,6 +170,7 @@ in `charly.yml`). Both `network: host` and the default charly bridge work.
 
 - `/charly-tools:charly` — The underlying binary candy this wraps.
 - `/charly-infrastructure:supervisord` — Init system for the `charly-mcp` program.
+- `/charly-jupyter:jupyter-mcp` — Sibling MCP server (notebook manipulation, FastMCP-based).
 
 ## Cross-References
 
